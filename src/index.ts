@@ -96,11 +96,28 @@ app.delete("/api/v1/content",userMiddleware,async(req,res)=>{
 app.post("/api/v1/brain/share",userMiddleware,async(req,res)=>{
     const share =req.body.share;
     if(share){
+    const existingLink=await LinkModel.findOne({
+       
+       //@ts-ignore
+        userId:req.userId
+    })
+
+    if(existingLink){
+        res.json({
+            hash:existingLink.hash
+        })
+        return;
+    }
+
+    
         const hash=random(10);
       await  LinkModel.create({
         //@ts-ignore
             userId:req.userId,
             hash:hash
+        })
+        res.json({
+            hash
         })
     }else{
       await  LinkModel.deleteOne({
@@ -109,12 +126,45 @@ app.post("/api/v1/brain/share",userMiddleware,async(req,res)=>{
         })
     }
     res.json({
-        message:"updated share link",
+        message:"link removed"
     })
 })
 
-app.get("/api/v1/brain/:shareLink",(req,res)=>{
-    
+app.get("/api/v1/brain/:shareLink",async(req,res)=>{
+    const hash=req.params.shareLink;
+
+    const link =await LinkModel.findOne({
+        hash
+    })
+
+    if(!hash){
+        res.status(411).json({
+            message:"sorry incorrect link"
+        })
+        return;
+    }
+
+    const content=await ContentModel.find({
+        //@ts-ignore
+        userId:link.userId
+    })
+
+    const user=await UserModel.find({
+        _id:link?.userId
+    })
+
+
+    if(!user){
+        res.status(411).json({
+            message:"error happend"
+        })
+        return;
+    }
+    res.json({
+        //@ts-ignore
+        username:user.userName,
+        content
+    })
 })
 
 
