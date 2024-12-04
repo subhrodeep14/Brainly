@@ -1,11 +1,12 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import { ContentModel, LinkModel, UserModel } from './db';
 import jwt from 'jsonwebtoken';
 import {JWT_PASSWORD} from './config'
 import { userMiddleware } from './middleware';
 import { random } from './utils';
+import cors from "cors";
 const app =express();
+app.use(cors());
 
 app.use(express.json());
 
