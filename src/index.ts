@@ -25,7 +25,7 @@ app.post("/api/v1/signup",async(req,res)=>{
         res.json({message:"you are log in"});
         
     } catch (error) {
-        res.status(411).json({message:"user allready exists "})
+        res.status(402).json({message:"user allready exists "})
     }
 
     
@@ -54,10 +54,13 @@ app.post("/api/v1/signin",async(req,res)=>{
 app.post("/api/v1/content",userMiddleware,async(req,res)=>{
     const link =req.body.link;
     const type=req.body.type;
+    const title=req.body.title;
 
    await  ContentModel.create({
         link,
         type,
+        title,
+    
         //@ts-ignore
         userId:req.userId,
         tags:[]
